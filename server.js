@@ -15,11 +15,18 @@ useUnifiedTopology: true})
         const db = client.db('my-quotes')
         const quotesCollection = db.collection('quotes')
 
+        app.set('view engine', 'ejs')
  
         app.use(bodyParser.urlencoded( { extended: true }))
         
         app.get('/', (req, res) => {
-            res.sendFile(__dirname + '/index.html' ) })
+            db.collection('quotes').find().toArray()
+                .then(results =>{
+                    res.render('index.ejs', { quotes: results})
+                })
+               .catch(error => console.error(error))
+
+        })
         
         app.post('/quotes', (req, res) => {
             quotesCollection.insertOne(req.body)
